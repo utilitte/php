@@ -53,6 +53,7 @@ class Arrays
 	public static function columnAsKey(iterable $array, $column): array
 	{
 		$result = [];
+
 		foreach ($array as $values) {
 			$result[$values[$column]] = $values;
 		}

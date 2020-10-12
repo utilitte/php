@@ -10,5 +10,6 @@ Assert::same([
 	5 => ['id' => 5],
 	6 => ['id' => 6],
 ], Arrays::columnAsKey([
-	['id' => 5], ['id' => 6],
+	['id' => 5],
+	['id' => 6],
 ], 'id'));
