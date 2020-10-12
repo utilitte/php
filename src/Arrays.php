@@ -46,6 +46,21 @@ class Arrays
 	}
 
 	/**
+	 * @param mixed[] $array
+	 * @param string|int $column
+	 * @return mixed[]
+	 */
+	public static function columnAsKey(iterable $array, $column): array
+	{
+		$result = [];
+		foreach ($array as $values) {
+			$result[$values[$column]] = $values;
+		}
+
+		return $result;
+	}
+
+	/**
 	 * @param mixed[] $previous
 	 * @param mixed[] $current
 	 */
