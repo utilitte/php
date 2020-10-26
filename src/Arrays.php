@@ -15,13 +15,17 @@ class Arrays
 	 * @param mixed[] $array
 	 * @return mixed[]
 	 */
-	public static function defaults(array $defaults, iterable $array): array
+	public static function defaults(array $defaults, iterable $array, bool $soft = false): array
 	{
 		foreach ($array as $key => $value) {
 			if (!array_key_exists($key, $defaults)) {
-				throw new LogicException(
-					sprintf('Key %s is not allowed in array', $key)
-				);
+				if (!$soft) {
+					throw new LogicException(
+						sprintf('Key %s is not allowed in array', $key)
+					);
+				}
+
+				continue;
 			}
 
 			$defaults[$key] = $value;
@@ -43,22 +47,6 @@ class Arrays
 		}
 
 		return $array[$key];
-	}
-
-	/**
-	 * @param mixed[] $array
-	 * @param string|int $column
-	 * @return mixed[]
-	 */
-	public static function columnAsKey(iterable $array, $column): array
-	{
-		$result = [];
-
-		foreach ($array as $values) {
-			$result[$values[$column]] = $values;
-		}
-
-		return $result;
 	}
 
 	/**
