@@ -50,6 +50,19 @@ class Arrays
 	}
 
 	/**
+	 * @param mixed[] $values
+	 * @return mixed[]
+	 */
+	public static function castValueToType(array $values, string $type): array
+	{
+		return array_map(function ($value) use ($type) {
+			settype($value, $type);
+
+			return $value;
+		}, $values);
+	}
+
+	/**
 	 * @param mixed[] $previous
 	 * @param mixed[] $current
 	 */
