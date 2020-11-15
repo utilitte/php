@@ -2,9 +2,12 @@
 
 namespace Utilitte\Php;
 
+// phpcs:ignoreFile -- cs bug
+
 final class ArrayBuilder
 {
 
+	/** @var mixed[] */
 	private array $values = [];
 
 	public static function create(): self
@@ -12,6 +15,9 @@ final class ArrayBuilder
 		return new self();
 	}
 
+	/**
+	 * @param mixed[] $values
+	 */
 	public function setValues(array $values): self
 	{
 		$this->values = $values;
@@ -19,6 +25,9 @@ final class ArrayBuilder
 		return $this;
 	}
 
+	/**
+	 * @param mixed $values
+	 */
 	public function addSkipIfEmpty(string $key, $values): self
 	{
 		if (!empty($values)) {
@@ -28,6 +37,9 @@ final class ArrayBuilder
 		return $this;
 	}
 
+	/**
+	 * @param mixed $values
+	 */
 	public function addSkipIf(string $key, $values, bool $skip): self
 	{
 		if (!$skip) {
@@ -37,6 +49,9 @@ final class ArrayBuilder
 		return $this;
 	}
 
+	/**
+	 * @param mixed $values
+	 */
 	public function appendSkipIf($values, bool $skip): self
 	{
 		if (!$skip) {
@@ -46,6 +61,9 @@ final class ArrayBuilder
 		return $this;
 	}
 
+	/**
+	 * @param mixed $values
+	 */
 	public function append($values): self
 	{
 		$this->values[] = $values;
@@ -53,6 +71,9 @@ final class ArrayBuilder
 		return $this;
 	}
 
+	/**
+	 * @param mixed $values
+	 */
 	public function add(string $key, $values): self
 	{
 		$this->values[$key] = $values;
@@ -60,6 +81,9 @@ final class ArrayBuilder
 		return $this;
 	}
 
+	/**
+	 * @return mixed[]
+	 */
 	public function getResult(): array
 	{
 		return $this->values;
