@@ -2,7 +2,7 @@
 
 namespace Utilitte\Php;
 
-// phpcs:ignoreFile -- cs bug
+// phpcs:ignoreFile -- phpcs bug
 
 final class ArrayBuilder
 {
