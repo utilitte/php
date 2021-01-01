@@ -128,6 +128,16 @@ class Arrays
 		return $return;
 	}
 
+	public static function removeByIndex(array $source, $value): array
+	{
+		$index = array_search($source, $value, true);
+		if ($index !== false) {
+			unset($source[$index]);
+		}
+
+		return $source;
+	}
+
 	/**
 	 * @param mixed $first
 	 * @param mixed $second
