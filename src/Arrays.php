@@ -83,6 +83,8 @@ class Arrays
 				if ($comparator($value, $value1)) {
 					unset($removed[$key]);
 					unset($added[$key1]);
+					
+					break;
 				}
 			}
 		}
