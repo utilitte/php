@@ -52,16 +52,8 @@ final class TypeAssertion
 		}
 
 		throw new TypeAssertionException(
-			sprintf('Variable is type of "%s", expected "%s"', self::variableToType($variable, $type), $expectType)
+			sprintf('Variable is type of "%s", expected "%s"', get_debug_type($variable), $expectType)
 		);
-	}
-
-	/**
-	 * @param mixed $variable
-	 */
-	private static function variableToType($variable, string $type): string
-	{
-		return $type === 'object' ? get_class($variable) : $type;
 	}
 
 }

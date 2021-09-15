@@ -26,4 +26,30 @@ final class Numbers
 		return round($bytes, $precision) . ($withSpace ? ' ' : '') . $unit;
 	}
 
+	public static function formatShort(int $value, int $precision = 1): string
+	{
+		// 1_000
+		if ($value < 1000) {
+			return self::removeUnnecessaryDotsZeros($value, $precision);
+		} elseif ($value < 1000000) {
+			// 1_000_000
+			return self::removeUnnecessaryDotsZeros($value / 1000, $precision) . 'K';
+		} elseif ($value < 1000000000) {
+			// 1_000_000_000
+			return self::removeUnnecessaryDotsZeros($value / 1000000, $precision) . 'M';
+		} elseif ($value < 1000000000000) {
+			// 1_000_000_000_000
+			return self::removeUnnecessaryDotsZeros($value / 1000000000, $precision) . 'B';
+		}
+
+		return self::removeUnnecessaryDotsZeros($value / 1000000000000, $precision) . 'T';
+	}
+
+	private static function removeUnnecessaryDotsZeros(float $value, int $precision): string
+	{
+		$value = rtrim(number_format($value, $precision), '0.');
+
+		return $value === '' ? '0' : $value;
+	}
+
 }
