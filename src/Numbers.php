@@ -2,6 +2,9 @@
 
 namespace Utilitte\Php;
 
+use JetBrains\PhpStorm\Deprecated;
+use Utilitte\Php\Numbers\NumberFormatter;
+
 final class Numbers
 {
 
@@ -10,46 +13,16 @@ final class Numbers
 		return min(max($value, $min), $max);
 	}
 
+	#[Deprecated]
 	public static function bytes(float $bytes, int $precision = 2, bool $withSpace = true): string
 	{
-		$bytes = round($bytes);
-		$units = ['B', 'kB', 'MB', 'GB', 'TB', $end = 'PB'];
-
-		foreach ($units as $unit) {
-			if (abs($bytes) < 1024 || $unit === $end) {
-				break;
-			}
-
-			$bytes /= 1024;
-		}
-
-		return round($bytes, $precision) . ($withSpace ? ' ' : '') . $unit;
+		return NumberFormatter::formatBytes($bytes, $precision);
 	}
 
+	#[Deprecated]
 	public static function formatShort(int $value, int $precision = 1): string
 	{
-		// 1_000
-		if ($value < 1000) {
-			return self::removeUnnecessaryDotsZeros($value, $precision);
-		} elseif ($value < 1000000) {
-			// 1_000_000
-			return self::removeUnnecessaryDotsZeros($value / 1000, $precision) . 'K';
-		} elseif ($value < 1000000000) {
-			// 1_000_000_000
-			return self::removeUnnecessaryDotsZeros($value / 1000000, $precision) . 'M';
-		} elseif ($value < 1000000000000) {
-			// 1_000_000_000_000
-			return self::removeUnnecessaryDotsZeros($value / 1000000000, $precision) . 'B';
-		}
-
-		return self::removeUnnecessaryDotsZeros($value / 1000000000000, $precision) . 'T';
-	}
-
-	private static function removeUnnecessaryDotsZeros(float $value, int $precision): string
-	{
-		$value = rtrim(number_format($value, $precision), '0.');
-
-		return $value === '' ? '0' : $value;
+		return NumberFormatter::formatShort($value, $precision);
 	}
 
 }
