@@ -2,28 +2,43 @@
 
 namespace Utilitte\Php;
 
-use JetBrains\PhpStorm\ArrayShape;
-
 final class Strings
 {
 
-	#[ArrayShape('string', 'string')]
-	public static function splitByPosition(string $haystack, int $pos): array
+	/**
+	 * @return array{string|null, string}
+	 */
+	public static function splitByNeedle(string $haystack, string $needle): array
+	{
+		return self::splitByPositionFalseable($haystack, strpos($haystack, $needle), strlen($needle));
+	}
+
+	public static function joinWith(string $join, string|null ... $arguments): string
+	{
+		return implode($join, array_filter($arguments));
+	}
+
+	/**
+	 * @return array{string, string}
+	 */
+	public static function splitByPosition(string $haystack, int $pos, int $length = 1): array
 	{
 		return [
 			substr($haystack, 0, $pos),
-			substr($haystack, $pos + 1),
+			substr($haystack, $pos + $length),
 		];
 	}
 
-	#[ArrayShape('string|null', 'string')]
-	public static function splitByPositionFalseable(string $haystack, int|false $pos): array
+	/**
+	 * @return array{string|null, string}
+	 */
+	public static function splitByPositionFalseable(string $haystack, int|false $pos, int $length = 1): array
 	{
 		if ($pos === false) {
 			return [null, $haystack];
 		}
 
-		return self::splitByPosition($haystack, $pos);
+		return self::splitByPosition($haystack, $pos, $length);
 	}
 
 	public static function append(?string $string, string $append): ?string
