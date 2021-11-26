@@ -6,25 +6,39 @@ use ArrayAccess;
 use ArrayIterator;
 use IteratorAggregate;
 
+/**
+ * @template T
+ * @implements ArrayAccess<T>
+ */
 final class LazyArrayAccess implements ArrayAccess
 {
 
-	/** @var callable */
+	/** @var callable(): T */
 	private $callback;
 
-	private mixed $arrayAccess;
+	/** @var T[] */
+	private array $cache;
 
+	/**
+	 * @param callable(): T
+	 */
 	public function __construct(callable $callback)
 	{
 		$this->callback = $callback;
 	}
 
-	public function getSource(): mixed
+	/**
+	 * @return T[]|ArrayAccess<T>
+	 */
+	public function getSource(): array|ArrayAccess
 	{
 		return ($this->callback)();
 	}
 
-	private function getArrayAccess(): mixed
+	/**
+	 * @return T[]|ArrayAccess<T>
+	 */
+	private function getArrayAccess(): array|ArrayAccess
 	{
 		if (!isset($this->arrayAccess)) {
 			$result = ($this->callback)();
@@ -43,11 +57,17 @@ final class LazyArrayAccess implements ArrayAccess
 		return isset($this->getArrayAccess()[$offset]) || array_key_exists($offset, $this->array);
 	}
 
+	/**
+	 * @return T
+	 */
 	public function offsetGet(mixed $offset): mixed
 	{
 		return $this->getArrayAccess()[$offset];
 	}
 
+	/**
+	 * @param T $value
+	 */
 	public function offsetSet(mixed $offset, mixed $value): void
 	{
 		$this->getArrayAccess();

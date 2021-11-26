@@ -2,15 +2,19 @@
 
 namespace Utilitte\Php\Numbers;
 
+use InvalidArgumentException;
 use LogicException;
+use Utilitte\Php\Numbers;
 
 final class NumberFormatter
 {
 
-	public static function formatBytes(int|float $number, ?int $decimals = null, bool $fixed = false): string
+	public static function formatBytes(string|int|float $number, ?int $decimals = null, bool $fixed = true): string
 	{
 		static $end = 'PB';
 		static $units = ['B', 'kB', 'MB', 'GB', 'TB', 'PB'];
+
+		$number = Numbers::convertToFloat($number);
 
 		$unit = 'B';
 		foreach ($units as $unit) {
@@ -21,10 +25,10 @@ final class NumberFormatter
 			$number /= 1024;
 		}
 
-		return self::formatNumber($number, $decimals, $fixed). $unit;
+		return self::formatNumber($number, $decimals, $fixed) . $unit;
 	}
 
-	public static function formatShort(int|float $number, ?int $decimals = null, bool $fixed = false): string
+	public static function formatShort(string|int|float $number, ?int $decimals = null, bool $fixed = true): string
 	{
 		static $formatters = [
 			'' => 1_000,
@@ -34,6 +38,7 @@ final class NumberFormatter
 			'T' => null,
 		];
 
+		$number = Numbers::convertToFloat($number);
 		$divider = 1;
 		foreach ($formatters as $str => $limit) {
 			if ($limit === null || $number < $limit) {
@@ -47,48 +52,35 @@ final class NumberFormatter
 	}
 
 	public static function formatPercentage(
-		string|int|float|null $number,
-		int $decimals = 2,
-		bool $sign = true,
+		string|int|float $number,
+		?int $decimals = null,
 		bool $fixed = true,
-	): ?string
+		bool $sign = false,
+	): string
 	{
-		if ($number === null || is_string($number) && !is_numeric($number)) {
-			return null;
-		}
-
-		$value = self::formatNumber($number, $decimals, $fixed);
-
-		if ($value === null) {
-			return null;
-		}
-
-		return ($sign && $number > 0 ? '+' : '') . $value . '%';
+		return self::formatNumber($number, $decimals, $fixed) . '%';
 	}
 
-	public static function formatNumber(string|int|float|null $number, ?int $decimals = null, bool $fixed = false): ?string
+	public static function formatNumber(
+		string|int|float|null $number,
+		?int $decimals = null,
+		bool $fixed = true,
+		bool $sign = false,
+	): string
 	{
-		if (!is_numeric($number)) {
-			return null;
-		}
-
-		$number = (float) $number;
-
-		if (is_nan($number) || is_infinite($number)) {
-			return null;
-		}
+		$number = Numbers::convertToFloat($number);
 
 		if ($decimals === null) {
-			$decimals = 2;
-
-			if ($number < 0.01) {
-				$decimals = 6;
-			} elseif ($number < 0.1) {
+			if ($fixed === true) {
+				$decimals = 0;
+			} elseif ($number < 0.01) {
 				$decimals = 5;
-			} elseif ($number < 1) {
+			} elseif ($number < 0.1) {
 				$decimals = 4;
-			} elseif ($number < 10) {
+			} elseif ($number < 1) {
 				$decimals = 3;
+			} else {
+				$decimals = 2;
 			}
 		}
 
@@ -98,7 +90,7 @@ final class NumberFormatter
 			$number = self::removeZerosAfterDot($number);
 		}
 
-		return $number;
+		return ($sign && $number > 0 ? '+' : '') . $number . '%';
 	}
 
 	public static function removeZerosAfterDot(string $number): string
