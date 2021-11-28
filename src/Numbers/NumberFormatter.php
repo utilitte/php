@@ -90,7 +90,7 @@ final class NumberFormatter
 			$number = self::removeZerosAfterDot($number);
 		}
 
-		return ($sign && $number > 0 ? '+' : '') . $number . '%';
+		return ($sign && $number > 0 ? '+' : '') . $number;
 	}
 
 	public static function removeZerosAfterDot(string $number): string
