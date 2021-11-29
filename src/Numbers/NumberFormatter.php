@@ -58,7 +58,7 @@ final class NumberFormatter
 		bool $sign = false,
 	): string
 	{
-		return self::formatNumber($number, $decimals, $fixed) . '%';
+		return self::formatNumber($number, $decimals, $fixed, $sign) . '%';
 	}
 
 	public static function formatNumber(
