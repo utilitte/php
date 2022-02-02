@@ -11,7 +11,7 @@ final class ExceptionHelper
 	{
 		$suggestion = Helpers::getSuggestion($posibilities, $value);
 
-		if ($suggestion !== null) {
+		if (!$suggestion) {
 			return '.';
 		}
 

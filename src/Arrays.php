@@ -12,6 +12,27 @@ use Utilitte\Php\ValueObject\ArraySynchronized;
 class Arrays
 {
 
+	/**
+	 * @template K
+	 * @template V
+	 * @param array<K, V> $values
+	 * @return array<K, V>
+	 */
+	public static function remove(array $values, mixed $value, int $limit = -1): array
+	{
+		foreach ($values as $key => $val) {
+			if ($val === $value) {
+				unset($values[$key]);
+				
+				if ($limit !== -1 && (--$limit <= 0)) {
+					break;
+				}
+			}
+		}
+
+		return $values;
+	}
+
 	public static function allows(array $values, array $keys): array
 	{
 		$return = [];
@@ -19,7 +40,7 @@ class Arrays
 		foreach ($keys as $key) {
 			$return[$key] = $values[$key] ?? null;
 		}
-		
+
 		return $return;
 	}
 
