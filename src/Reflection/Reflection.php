@@ -9,7 +9,7 @@ final class Reflection
 {
 
 	/**
-	 * @template T
+	 * @template T of object
 	 * @param class-string<T> $name
 	 * @return T|null
 	 */
