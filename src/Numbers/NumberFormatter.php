@@ -95,7 +95,9 @@ final class NumberFormatter
 
 	public static function removeZerosAfterDot(string $number): string
 	{
-		return rtrim(rtrim($number, '0'), '.');
+		$return = rtrim(rtrim($number, '0'), '.');
+		
+		return $return === '' ? '0' : $return;
 	}
 
 }
