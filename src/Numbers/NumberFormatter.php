@@ -95,6 +95,10 @@ final class NumberFormatter
 
 	public static function removeZerosAfterDot(string $number): string
 	{
+		if (!str_contains($number, '.')) {
+			return $number;
+		}
+
 		$return = rtrim(rtrim($number, '0'), '.');
 		
 		return $return === '' ? '0' : $return;
