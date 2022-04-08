@@ -7,9 +7,9 @@ use Nette\Utils\Helpers;
 final class ExceptionHelper
 {
 
-	public static function didYouMean(array $posibilities, string $value): string
+	public static function didYouMean(array $possibilities, string $value): string
 	{
-		$suggestion = Helpers::getSuggestion($posibilities, $value);
+		$suggestion = Helpers::getSuggestion($possibilities, $value);
 
 		if (!$suggestion) {
 			return '.';
