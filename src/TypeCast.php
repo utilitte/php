@@ -2,17 +2,21 @@
 
 namespace Utilitte\Php;
 
+use JetBrains\PhpStorm\Deprecated;
 use JetBrains\PhpStorm\ExpectedValues;
 use LogicException;
 
+#[Deprecated]
 final class TypeCast
 {
 
+	#[Deprecated]
 	public const ALLOWED_TYPES = [
 		'bool', 'int', 'float', 'double', 'string', 'array', 'object', 'mixed',
 		'?bool', '?int', '?float', '?double', '?string', '?array', '?object',
 	];
 
+	#[Deprecated]
 	public static function setType(
 		mixed $value,
 		#[ExpectedValues(self::ALLOWED_TYPES)]
@@ -44,6 +48,7 @@ final class TypeCast
 	 * @param mixed[] $values
 	 * @return mixed[]
 	 */
+	#[Deprecated]
 	public static function setTypes(
 		array $values,
 		#[ExpectedValues(self::ALLOWED_TYPES)]

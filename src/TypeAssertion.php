@@ -2,8 +2,10 @@
 
 namespace Utilitte\Php;
 
+use JetBrains\PhpStorm\Deprecated;
 use Utilitte\Php\Exception\TypeAssertionException;
 
+#[Deprecated]
 final class TypeAssertion
 {
 
@@ -28,6 +30,7 @@ final class TypeAssertion
 	/**
 	 * @param mixed $variable
 	 */
+	#[Deprecated]
 	public static function assertType($variable, string $expectType): void
 	{
 		$type = gettype($variable);

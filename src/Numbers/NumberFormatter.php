@@ -3,12 +3,15 @@
 namespace Utilitte\Php\Numbers;
 
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Deprecated;
 use LogicException;
 use Utilitte\Php\Numbers;
 
+#[Deprecated]
 final class NumberFormatter
 {
 
+	#[Deprecated]
 	public static function formatBytes(string|int|float $number, ?int $decimals = null, bool $fixed = true): string
 	{
 		static $end = 'PB';
@@ -28,6 +31,7 @@ final class NumberFormatter
 		return self::formatNumber($number, $decimals, $fixed) . $unit;
 	}
 
+	#[Deprecated]
 	public static function formatShort(string|int|float $number, ?int $decimals = null, bool $fixed = true): string
 	{
 		static $formatters = [
@@ -51,6 +55,7 @@ final class NumberFormatter
 		throw new LogicException('Unexpected error.');
 	}
 
+	#[Deprecated]
 	public static function formatPercentage(
 		string|int|float $number,
 		?int $decimals = null,
@@ -61,6 +66,7 @@ final class NumberFormatter
 		return self::formatNumber($number, $decimals, $fixed, $sign) . '%';
 	}
 
+	#[Deprecated]
 	public static function formatNumber(
 		string|int|float|null $number,
 		?int $decimals = null,
@@ -100,7 +106,7 @@ final class NumberFormatter
 		}
 
 		$return = rtrim(rtrim($number, '0'), '.');
-		
+
 		return $return === '' ? '0' : $return;
 	}
 

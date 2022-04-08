@@ -3,6 +3,7 @@
 namespace Utilitte\Php;
 
 use InvalidArgumentException;
+use JetBrains\PhpStorm\Deprecated;
 use LogicException;
 use OutOfBoundsException;
 use Traversable;
@@ -23,7 +24,7 @@ class Arrays
 		foreach ($values as $key => $val) {
 			if ($val === $value) {
 				unset($values[$key]);
-				
+
 				if ($limit !== -1 && (--$limit <= 0)) {
 					break;
 				}
@@ -224,6 +225,7 @@ class Arrays
 	 * @param mixed[] $previous
 	 * @param mixed[] $current
 	 */
+	#[Deprecated]
 	public static function synchronize(
 		iterable $previous,
 		iterable $current,

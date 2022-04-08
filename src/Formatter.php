@@ -2,11 +2,14 @@
 
 namespace Utilitte\Php;
 
+use JetBrains\PhpStorm\Deprecated;
 use Nette\Utils\Strings;
 
+#[Deprecated]
 final class Formatter
 {
 
+	#[Deprecated]
 	public static function formatNumberShortcut($number): string
 	{
 		if ($number < 1000) {

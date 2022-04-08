@@ -4,10 +4,12 @@ namespace Utilitte\Php\ValueObject;
 
 use ArrayIterator;
 use IteratorAggregate;
+use JetBrains\PhpStorm\Deprecated;
 
 /**
  * @implements IteratorAggregate<mixed, mixed>
  */
+#[Deprecated]
 final class ArraySynchronized implements IteratorAggregate
 {
 

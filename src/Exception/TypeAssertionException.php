@@ -3,7 +3,9 @@
 namespace Utilitte\Php\Exception;
 
 use Exception;
+use JetBrains\PhpStorm\Deprecated;
 
+#[Deprecated]
 class TypeAssertionException extends Exception
 {
 
