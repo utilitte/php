@@ -3,21 +3,55 @@
 namespace Utilitte\Php;
 
 use InvalidArgumentException;
-use JetBrains\PhpStorm\Deprecated;
-use LogicException;
 use OutOfBoundsException;
 use Traversable;
-use Utilitte\Php\ValueObject\ArraySearchCriteria;
-use Utilitte\Php\ValueObject\ArraySynchronized;
 
 class Arrays
 {
 
 	/**
-	 * @template K
-	 * @template V
-	 * @param array<K, V> $values
-	 * @return array<K, V>
+	 * @template TKey of string|int
+	 * @template TValue
+	 * @template TResult
+	 * @param iterable<TKey, TValue> $values
+	 * @param callable(TValue, TKey, iterable<TKey, TValue>): TResult $callback
+	 * @return array<TKey, TResult>
+	 */
+	public static function map(iterable $values, callable $callback): array
+	{
+		$array = [];
+
+		foreach ($values as $key => $value) {
+			$array[$key] = $callback($value, $key, $values);
+		}
+
+		return $array;
+	}
+
+	/**
+	 * @template TKey
+	 * @template TValue
+	 * @template TResult
+	 * @param iterable<TKey, TValue> $values
+	 * @param callable(TValue, TKey, iterable<TKey, TValue>): TResult $callback
+	 * @return array<int, TResult>
+	 */
+	public static function mapIgnoreKeys(iterable $values, callable $callback): array
+	{
+		$array = [];
+
+		foreach ($values as $key => $value) {
+			$array[] = $callback($value, $key, $values);
+		}
+
+		return $array;
+	}
+
+	/**
+	 * @template TKey
+	 * @template TValue
+	 * @param array<TKey, TValue> $values
+	 * @return array<TKey, TValue>
 	 */
 	public static function remove(array $values, mixed $value, int $limit = -1): array
 	{
@@ -34,175 +68,64 @@ class Arrays
 		return $values;
 	}
 
-	public static function allows(array $values, array $keys): array
-	{
-		$return = [];
-
-		foreach ($keys as $key) {
-			$return[$key] = $values[$key] ?? null;
-		}
-
-		return $return;
-	}
-
+	/**
+	 * @param iterable<mixed> $iterable
+	 * @return int
+	 */
 	public static function count(iterable $iterable): int
 	{
 		return $iterable instanceof Traversable ? iterator_count($iterable) : count($iterable);
 	}
 
-	public static function valueToKeyWithBoolValue(iterable $array): array
+	/**
+	 * @template TKey
+	 * @template TValue
+	 * @param iterable<TKey, TValue> $iterable
+	 * @return array<TKey, TValue>
+	 */
+	public static function toArray(iterable $iterable): array
 	{
-		$values = [];
-
-		foreach ($array as $value) {
-			$values[$value] = true;
-		}
-
-		return $values;
-	}
-
-	public static function searchBestByArray(array $search, array $in, ArraySearchCriteria $criteria): ?array
-	{
-		$mustHave = self::combineKeys($criteria->mustHave);
-		$mayHave = self::combineKeys($criteria->mayHave);
-
-		$best = null;
-		$bestScore = 0;
-		foreach ($in as $item) {
-			$score = 0;
-
-			foreach ($mustHave as $firstKey => $secondKey) {
-				if (!isset($search[$firstKey])) {
-					throw new OutOfBoundsException(sprintf('Key %s not exist in 1st argument.', $firstKey));
-				}
-
-				if (!isset($item[$secondKey])) {
-					continue 2;
-				}
-
-				if ($search[$firstKey] !== $item[$secondKey]) {
-					continue 2;
-				}
-			}
-
-			foreach ($mayHave as $firstKey => $secondKey) {
-				if (!isset($search[$firstKey])) {
-					throw new OutOfBoundsException(sprintf('Key %s not exist in 1st argument.', $firstKey));
-				}
-
-				if (!isset($item[$secondKey])) {
-					continue;
-				}
-
-				if ($search[$firstKey] === $item[$secondKey]) {
-					$score++;
-				}
-			}
-
-			if ($score > $bestScore) {
-				$bestScore = $score;
-				$best = $item;
-			} else if ($best === null && $mustHave) {
-				$best = $item;
-			}
-
-		}
-
-		return $best;
-	}
-
-	public static function searchBy(array $possibilities, array $keyValues): ?array
-	{
-		foreach ($possibilities as $possibility) {
-			foreach ($keyValues as $key => $value) {
-				if (!isset($possibility[$key]) || $possibility[$key] !== $value) {
-					continue 2;
-				}
-			}
-
-			return $possibility;
-		}
-
-		return null;
-	}
-
-	public static function compare(array $first, array $second, array $keys, bool $throwOnInvalidIndex = true): bool
-	{
-		foreach ($keys as $firstKey => $secondKey) {
-			if (is_numeric($firstKey)) {
-				$firstKey = $secondKey;
-			}
-
-			if (!isset($first[$firstKey])) {
-				if ($throwOnInvalidIndex) {
-					throw new OutOfBoundsException(sprintf('Key %s not exist in 1st argument.', $firstKey));
-				}
-
-				return false;
-			}
-
-			if (!isset($second[$secondKey])) {
-				if ($throwOnInvalidIndex) {
-					throw new OutOfBoundsException(sprintf('Key %s not exist in 2nd argument.', $secondKey));
-				}
-
-				return false;
-			}
-
-			if ($first[$firstKey] !== $second[$secondKey]) {
-				return false;
-			}
-		}
-
-		return true;
+		return $iterable instanceof Traversable ? iterator_to_array($iterable) : (array) $iterable;
 	}
 
 	/**
+	 * @template TValue
+	 * @param iterable<TValue> $iterable
+	 * @return array<int, TValue>
+	 */
+	public static function toArrayIgnoreKeys(iterable $iterable): array
+	{
+		return $iterable instanceof Traversable ? iterator_to_array($iterable, false) : array_values((array) $iterable);
+	}
+
+	/**
+	 * @template TValue
+	 * @param TValue[] $array
+	 * @return int|string
 	 * @throws OutOfBoundsException
 	 */
 	public static function first(array $array): mixed
 	{
-		if (!count($array)) {
-			throw new OutOfBoundsException('Undefined first key in array.');
+		$key = array_key_first($array);
+
+		if ($key === null) {
+			throw new OutOfBoundsException('Cannot get first key from empty array.');
 		}
 
-		return reset($array);
+		return $key;
 	}
 
 	/**
-	 * @param mixed[] $defaults
-	 * @param mixed[] $array
-	 * @return mixed[]
+	 * @template TKey of string|int
+	 * @param array<TKey, mixed> $array
+	 * @return TKey
 	 */
-	public static function defaults(array $defaults, iterable $array, bool $soft = false): array
-	{
-		foreach ($array as $key => $value) {
-			if (!array_key_exists($key, $defaults)) {
-				if (!$soft) {
-					throw new LogicException(
-						sprintf('Key %s is not allowed in array', $key)
-					);
-				}
-
-				continue;
-			}
-
-			$defaults[$key] = $value;
-		}
-
-		return $defaults;
-	}
-
-	/**
-	 * @param mixed[] $array
-	 * @return mixed
-	 */
-	public static function firstValue(array $array)
+	public static function firstValue(array $array): string|int
 	{
 		$key = array_key_first($array);
 
 		if ($key === null) {
-			throw new InvalidArgumentException('Given array is empty');
+			throw new InvalidArgumentException('Cannot get first value from empty array.');
 		}
 
 		return $array[$key];
@@ -222,46 +145,48 @@ class Arrays
 	}
 
 	/**
-	 * @param mixed[] $previous
-	 * @param mixed[] $current
-	 */
-	#[Deprecated]
-	public static function synchronize(
-		iterable $previous,
-		iterable $current,
-		?callable $comparator = null
-	): ArraySynchronized
-	{
-		$comparator ??= [self::class, 'strictComparator'];
-
-		$added = self::iterableToArray($current);
-		$removed = self::iterableToArray($previous);
-		$result = $added;
-
-		foreach ($removed as $key => $value) {
-			foreach ($added as $key1 => $value1) {
-				if ($comparator($value, $value1)) {
-					unset($removed[$key]);
-					unset($added[$key1]);
-
-					break;
-				}
-			}
-		}
-
-		return new ArraySynchronized($added, $removed, $result);
-	}
-
-	/**
-	 * @param mixed[] $iterable
+	 * @param mixed[] $values
 	 * @return mixed[]
 	 */
-	public static function iterableToArray(iterable $iterable): array
+	public static function column(iterable $values, string|int $value, string|int|null $key = null): array
 	{
-		return $iterable instanceof Traversable ? iterator_to_array($iterable) : (array) $iterable;
+		$array = [];
+
+		if ($key !== null) {
+			foreach ($values as $itemKey => $item) {
+				if (!array_key_exists($key, $item)) {
+					throw new OutOfBoundsException(
+						sprintf('Key "%s" not exists in array[%s].', $key, $itemKey)
+					);
+				}
+
+				if (!array_key_exists($value, $item)) {
+					throw new OutOfBoundsException(
+						sprintf('Key "%s" not exists in array[%s].', $value, $itemKey)
+					);
+				}
+
+				$array[$item[$key]] = $item[$value];
+			}
+
+		} else {
+			foreach ($values as $itemKey => $item) {
+				if (!array_key_exists($value, $item)) {
+					throw new OutOfBoundsException(
+						sprintf('Key "%s" not exists in array[%s].', $value, $itemKey)
+					);
+				}
+
+				$array[] = $item[$value];
+			}
+
+		}
+
+		return $array;
 	}
 
 	/**
+	 * @deprecated
 	 * @param mixed[] $values
 	 * @param string|int $key
 	 * @param string|int $value
@@ -269,72 +194,22 @@ class Arrays
 	 */
 	public static function twoDimensionArrayToAssociativeArray(array $values, $key, $value): array
 	{
-		$return = [];
-
-		foreach ($values as $itemKey => $item) {
-			if (!array_key_exists($key, $item)) {
-				throw new InvalidArgumentException(
-					sprintf('Key "key" %s not exists in array[%s]', (string) $key, (string) $itemKey)
-				);
-			}
-
-			if (!array_key_exists($value, $item)) {
-				throw new InvalidArgumentException(
-					sprintf('Key "value" %s not exists in array[%s]', (string) $value, (string) $itemKey)
-				);
-			}
-
-			$return[$item[$key]] = $item[$value];
-		}
-
-		return $return;
+		return self::column($values, $value, $key);
 	}
 
-	public static function removeByIndex(array $source, $value): array
-	{
-		$index = array_search($source, $value, true);
-		if ($index !== false) {
-			unset($source[$index]);
-		}
-
-		return $source;
-	}
-
-	public static function getByPosition(array $array, int|array $positions): mixed
-	{
-		if (is_array($positions)) {
-			$position = array_shift($positions);
-		} else {
-			$position = $positions;
-			$positions = [];
-		}
-
-		$i = 0;
-		foreach ($array as $value) {
-			if ($i === $position) {
-				if ($positions) {
-					if (!is_array($value)) {
-						return null;
-					}
-
-					return self::getByPosition($value, $positions);
-				}
-
-				return $value;
-			}
-			$i++;
-		}
-
-		return null;
-	}
-
+	/**
+	 * @template TKey
+	 * @template TValue
+	 * @param iterable<TKey, TValue> $array
+	 * @param callable(TValue, TKey): bool $callback
+	 */
 	public static function every(iterable $array, callable $callback, bool $returnIfEmpty = true): bool
 	{
 		$empty = true;
-		foreach ($array as $value) {
+		foreach ($array as $key => $value) {
 			$empty = false;
 
-			if (!$callback($value)) {
+			if (!$callback($value, $key)) {
 				return false;
 			}
 		}
@@ -346,13 +221,19 @@ class Arrays
 		return true;
 	}
 
+	/**
+	 * @template TKey
+	 * @template TValue
+	 * @param iterable<TKey, TValue> $array
+	 * @param callable(TValue, TKey): bool $callback
+	 */
 	public static function some(iterable $array, callable $callback, bool $returnIfEmpty = false): bool
 	{
 		$empty = true;
-		foreach ($array as $value) {
+		foreach ($array as $key => $value) {
 			$empty = false;
 
-			if ($callback($value)) {
+			if ($callback($value, $key)) {
 				return true;
 			}
 		}
@@ -365,9 +246,10 @@ class Arrays
 	}
 
 	/**
-	 * @template T
-	 * @param T[] $items
-	 * @return T[]
+	 * @template TKey
+	 * @template TValue
+	 * @param array<TKey, TValue> $items
+	 * @return array<TKey, TValue>
 	 */
 	public static function shuffle(array $items): array
 	{
@@ -377,41 +259,17 @@ class Arrays
 	}
 
 	/**
-	 * @template T
-	 * @param T[] $items
-	 * @return T|null
+	 * @template TValue
+	 * @param TValue[] $items
+	 * @return TValue|null
 	 */
-	public static function randomOne(array $items): mixed
+	public static function randomItem(array $items): mixed
 	{
 		if (!$items) {
 			return null;
 		}
 
 		return $items[array_rand($items)];
-	}
-
-	/**
-	 * @param mixed $first
-	 * @param mixed $second
-	 * @phpcsSuppress SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod
-	 */
-	private static function strictComparator($first, $second): bool
-	{
-		return $first === $second;
-	}
-
-	private static function combineKeys(array $keys): array
-	{
-		$searchBy = [];
-		foreach ($keys as $firstKey => $secondKey) {
-			if (is_numeric($firstKey)) {
-				$searchBy[$secondKey] = $secondKey;
-			} else {
-				$searchBy[$firstKey] = $secondKey;
-			}
-		}
-
-		return $searchBy;
 	}
 
 }

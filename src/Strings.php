@@ -6,16 +6,11 @@ final class Strings
 {
 
 	/**
-	 * @return array{string|null, string}
+	 * @return array{string, string}
 	 */
 	public static function splitByNeedle(string $haystack, string $needle): array
 	{
 		return self::splitByPositionFalseable($haystack, strpos($haystack, $needle), strlen($needle));
-	}
-
-	public static function joinWith(string $join, string|null ... $arguments): string
-	{
-		return implode($join, array_filter($arguments));
 	}
 
 	/**
@@ -30,15 +25,20 @@ final class Strings
 	}
 
 	/**
-	 * @return array{string|null, string}
+	 * @return array{string, string}
 	 */
 	public static function splitByPositionFalseable(string $haystack, int|false $pos, int $length = 1): array
 	{
 		if ($pos === false) {
-			return [null, $haystack];
+			return [$haystack, ''];
 		}
 
 		return self::splitByPosition($haystack, $pos, $length);
+	}
+
+	public static function joinWith(string $join, string|null ... $arguments): string
+	{
+		return implode($join, array_filter($arguments));
 	}
 
 	public static function append(?string $string, string $append): ?string

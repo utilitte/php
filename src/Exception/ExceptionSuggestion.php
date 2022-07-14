@@ -1,12 +1,15 @@
 <?php declare(strict_types = 1);
 
-namespace Utilitte\Php;
+namespace Utilitte\Php\Exception;
 
 use Nette\Utils\Helpers;
 
-final class ExceptionHelper
+final class ExceptionSuggestion
 {
 
+	/**
+	 * @param mixed[] $possibilities
+	 */
 	public static function didYouMean(array $possibilities, string $value): string
 	{
 		$suggestion = Helpers::getSuggestion($possibilities, $value);

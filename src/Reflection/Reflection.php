@@ -3,7 +3,6 @@
 namespace Utilitte\Php\Reflection;
 
 use Generator;
-use JetBrains\PhpStorm\Deprecated;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -12,17 +11,8 @@ final class Reflection
 
 	/**
 	 * @template T of object
-	 * @param class-string<T> $name
-	 * @return T|null
-	 */
-	#[Deprecated]
-	public static function getAttributeObject(ReflectionMethod|ReflectionClass $reflection, string $name): ?object
-	{
-		return self::getAttribute($reflection, $name);
-	}
-
-	/**
-	 * @template T of object
+	 * @template TRef of object
+	 * @param ReflectionClass<TRef>|ReflectionMethod $reflection
 	 * @param class-string<T> $className
 	 * @return T|null
 	 */
@@ -35,6 +25,8 @@ final class Reflection
 
 	/**
 	 * @template T of object
+	 * @template TRef of object
+	 * @param ReflectionClass<TRef>|ReflectionMethod $reflection
 	 * @param class-string<T> $className
 	 * @return Generator<T>
 	 */
