@@ -37,7 +37,7 @@ final class Numbers
 		return (int) $number;
 	}
 
-	public static function toFloat(int|float|string $number, bool $strict = true): float
+	public static function toFloat(int|float|string $number): float
 	{
 		if (is_float($number)) {
 			return $number;
